@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TransactionsList from "./TransactionsList";
 import Search from "./Search";
 import AddTransactionForm from "./AddTransactionForm";
 
-function AccountContainer() {
-  const [transaction, setTransaction] = useState([])
-  const [query, setQuery] = useState("")
-  useEffect(() => {
-    fetch("http://localhost:8001/transactions?q=" + query)
-      .then((resp) => resp.json())
-      .then(transaction => setTransaction(transaction))
-  }, [query])
-  function handleSearch(e) {
-    setQuery(e.target.value)
-  }
+function AccountContainer({ transactions, addTransaction }) {
+  const [query, setQuery] = useState("");
+
+  // Filter transactions based on the query
+  const filteredTransactions = transactions.filter((transaction) =>
+    transaction.description.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
     <div>
-      <Search handleSearch={handleSearch} />
-      <AddTransactionForm />
-      <TransactionsList transactions={transaction} />
+      <Search handleSearch={(e) => setQuery(e.target.value)} />
+      <AddTransactionForm addTransaction={addTransaction} />
+      <TransactionsList transactions={filteredTransactions} />
     </div>
   );
 }
